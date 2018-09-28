@@ -33,7 +33,6 @@ public class TSPSolver {
 	/** Time given to solve the problem. */
 	private long m_timeLimit;
 
-	//
 	// -----------------------------
 	// ----- CONSTRUCTOR -----------
 	// -----------------------------
