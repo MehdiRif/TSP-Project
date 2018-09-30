@@ -50,7 +50,9 @@ public class Instance {
 	
 	/** Instance type */
 	private int m_typeInstance;
-
+	
+	/** Matrices des traces*/
+	private long[][] m_traces;
 
 
 	// -----------------------------
@@ -180,6 +182,8 @@ public class Instance {
 
 		sc.close();
 		lineSc.close();
+		
+		this.m_traces = new long[this.m_nbCities][this.m_nbCities];
 	}
 	
 	/**
@@ -455,7 +459,29 @@ public class Instance {
 	public long[][] getDistances() {
 		return m_distances;
 	}
-
+	
+	public long[][] getTraces(){
+		return m_distances;
+	}
+	public long getTraces(int i, int j) throws Exception {
+		if((i < 0) || (i >= m_nbCities)) {
+			throw new Exception("Error : city index " + i + " should range between 0 and " + (m_nbCities - 1) + ".");
+		}
+		if((j < 0) || (j >= m_nbCities)) {
+			throw new Exception("Error : city index " + j + " should range between 0 and " + (m_nbCities - 1) + ".");
+		}
+		return m_traces[i][j];
+	}
+	
+	public void setTraces(int i, int j,long val) throws Exception {
+		if((i < 0) || (i >= m_nbCities)) {
+			throw new Exception("Error : city index " + i + " should range between 0 and " + (m_nbCities - 1) + ".");
+		}
+		if((j < 0) || (j >= m_nbCities)) {
+			throw new Exception("Error : city index " + j + " should range between 0 and " + (m_nbCities - 1) + ".");
+		}
+		this.m_traces[i][j]=val;
+	}
 	/**
 	 * @return Return the name of the instance file.
 	 */

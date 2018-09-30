@@ -3,7 +3,12 @@ package tsp;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Ant {
+	double Q =1;
+	double ALPHA=1;
+	double BETA=1;
+	double GAMMA=0;
 	private Instance graph;
 	private int position;
 	private boolean[] already_seen;
@@ -29,6 +34,36 @@ public class Ant {
 		return length;
 	}
 	
+	public List<Integer> reachable(){
+		List<Integer> reachable =new ArrayList<Integer>();
+		for (int i=0 ; i<this.graph.getNbCities() ;i++) {
+			try { this.graph.getDistances(this.position, i);
+			reachable.add(i);
+			}
+			catch(Exception e) {
+			}
+			}
+		return reachable;
+	}
+	
+	public double ProbaFori(int j) {
+		List<Integer> reachable = this.reachable();
+		if (reachable.contains(j)){
+			double denominateur =0;
+			try {
+				
+			for (int i=0;i<reachable.size();i++) {
+				denominateur += GAMMA+Math.pow(this.graph.getTraces(this.position, i),ALPHA)/Math.pow(this.graph.getDistances(this.position, i),BETA);
+			}
+			return (GAMMA+Math.pow(this.graph.getTraces(this.position, j),ALPHA)/Math.pow(this.graph.getDistances(this.position, j),BETA)/denominateur);
+			
+			}
+			catch(Exception e) {
+				return 0;
+			}
+			}
+		else return 0;
+	}
 	
 
 
