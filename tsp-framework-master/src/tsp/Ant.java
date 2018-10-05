@@ -38,7 +38,8 @@ public class Ant {
 		List<Integer> reachable =new ArrayList<Integer>();
 		for (int i=0 ; i<this.graph.getNbCities() ;i++) {
 			try { this.graph.getDistances(this.position, i);
-			reachable.add(i);
+			if (!this.already_seen[i]) reachable.add(i);
+			
 			}
 			catch(Exception e) {
 			}
@@ -65,9 +66,27 @@ public class Ant {
 		else return 0;
 	}
 	
+	public int nextPos() {
+		double p = Math.random();
+		int i=0;
+		double sum=0;
+		List<Integer> reachable = this.reachable();
+		if (reachable.isEmpty()) return -1;
+		while (sum<p) {
+			sum+=ProbaFori(reachable.get(i));
+			i++;
+		}
+		return reachable.get(i-1);
+	}
 
-
-
+	public void updatePos() {
+		int nextPos=this.nextPos();
+		if (nextPos>=0) {
+			this.position=nextPos;
+			this.path.add(nextPos);
+			this.already_seen[nextPos]=true;
+		}
+	}
 
 
 
