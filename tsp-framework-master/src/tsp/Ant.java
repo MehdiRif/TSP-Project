@@ -87,7 +87,12 @@ public class Ant {
 			this.already_seen[nextPos]=true;
 		}
 	}
-
+	
+	public void parcour() {
+		while (this.nextPos()!=-1) {
+			updatePos();
+		}
+	}
 
 
 
