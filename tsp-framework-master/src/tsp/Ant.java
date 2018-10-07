@@ -4,37 +4,59 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Ant {
+public class Ant implements Comparable<Ant>{
 	double Q =1;
-	double ALPHA=1;
+	double ALPHA=2;
 	double BETA=1;
-	double GAMMA=0;
+	double GAMMA=1;
 	private Instance graph;
 	private int position;
 	private boolean[] already_seen;
 	private List<Integer> path;
+	private double denominateur;
+	
+	
+	
+	public int getPosition() {
+		return position;
+	}
 
-	public Ant(Instance instance) {
+	public boolean[] getAlready_seen() {
+		return already_seen;
+	}
+
+	public List<Integer> getPath() {
+		return path;
+	}
+
+	public Ant(Instance instance, int Depart) {
 		this.graph = instance;
-		this.position = 0;
+		this.position = Depart;
 		this.already_seen = new boolean[graph.getNbCities()];
 		this.path = new ArrayList<Integer>();
+		this.already_seen[Depart]=true;
+		this.path.add(Depart);
 	}
 	
 	public long pathLength() {
 		long length = 0;
 		for (int i=0; i<this.path.size()-1; i++) {
 			try {
-				length += graph.getDistances(i, i+1);
+				length += graph.getDistances(path.get(i), path.get(i+1));
 			}
 			catch (Exception e) {
 				return -1;
 			}
 		}
-		return length;
+		try {
+		return length+graph.getDistances(path.get(this.path.size()-1),this.path.get(0) );
+		}
+		catch (Exception e) {
+			return -1;
+		}
 	}
 	
-	public List<Integer> reachable(){
+	public List<Integer> reachable() throws Exception{
 		List<Integer> reachable =new ArrayList<Integer>();
 		for (int i=0 ; i<this.graph.getNbCities() ;i++) {
 			try { this.graph.getDistances(this.position, i);
@@ -44,29 +66,20 @@ public class Ant {
 			catch(Exception e) {
 			}
 			}
+		double denomin =0;
+		for (int i=0;i<reachable.size();i++) {
+			denomin += GAMMA+Math.pow(this.graph.getTraces(this.position, reachable.get(i)),ALPHA)/Math.pow((double) this.graph.getDistances(this.position, reachable.get(i)),BETA);
+		}
+		this.denominateur=denomin;
 		return reachable;
 	}
 	
-	public double ProbaFori(int j) {
-		List<Integer> reachable = this.reachable();
-		if (reachable.contains(j)){
-			double denominateur =0;
-			try {
-				
-			for (int i=0;i<reachable.size();i++) {
-				denominateur += GAMMA+Math.pow(this.graph.getTraces(this.position, i),ALPHA)/Math.pow(this.graph.getDistances(this.position, i),BETA);
-			}
-			return (GAMMA+Math.pow(this.graph.getTraces(this.position, j),ALPHA)/Math.pow(this.graph.getDistances(this.position, j),BETA)/denominateur);
+	public double ProbaFori(int j) throws Exception {
+			return (GAMMA+Math.pow(this.graph.getTraces(this.position, j),ALPHA)/Math.pow((double) this.graph.getDistances(this.position, j),BETA))/this.denominateur;
 			
-			}
-			catch(Exception e) {
-				return 0;
-			}
-			}
-		else return 0;
 	}
 	
-	public int nextPos() {
+	public int nextPos() throws Exception {
 		double p = Math.random();
 		int i=0;
 		double sum=0;
@@ -76,10 +89,10 @@ public class Ant {
 			sum+=ProbaFori(reachable.get(i));
 			i++;
 		}
-		return reachable.get(i-1);
+		return reachable.get(i-1); 
 	}
 
-	public void updatePos() {
+	public void updatePos() throws Exception {
 		int nextPos=this.nextPos();
 		if (nextPos>=0) {
 			this.position=nextPos;
@@ -88,14 +101,36 @@ public class Ant {
 		}
 	}
 	
-	public void parcour() {
+	public void parcour() throws Exception {
 		while (this.nextPos()!=-1) {
 			updatePos();
 		}
 	}
+	
+	public boolean fullparcour() {
+		return this.path.size()==this.graph.getNbCities();
+	}
 
+	public String toString() {
+		String sortie ="";
+		int n=this.path.size();
+		for (int i=0 ;i<n ;i++) {
+			sortie+=this.path.get(i);
+		}
+		return sortie+"test";
+	}
+	
+	public void updateTrace() {
+		for (int i=0 ;i<path.size()-1 ;i++) {
+			graph.m_traces[path.get(i)][path.get(i+1)]+=Q/this.pathLength();
+		}
+	}
 
-
+	@Override
+	public int compareTo(Ant a) {
+		// TODO Auto-generated method stub
+		return (int) Math.signum(this.pathLength()-a.pathLength());
+	}
 
 
 

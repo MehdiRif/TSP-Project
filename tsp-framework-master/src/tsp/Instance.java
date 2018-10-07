@@ -52,7 +52,9 @@ public class Instance {
 	private int m_typeInstance;
 	
 	/** Matrices des traces*/
-	private long[][] m_traces;
+	public double[][] m_traces;
+	
+	private double RHO = 0.1;
 
 
 	// -----------------------------
@@ -183,7 +185,7 @@ public class Instance {
 		sc.close();
 		lineSc.close();
 		
-		this.m_traces = new long[this.m_nbCities][this.m_nbCities];
+		this.m_traces = new double[this.m_nbCities][this.m_nbCities];
 	}
 	
 	/**
@@ -463,7 +465,7 @@ public class Instance {
 	public long[][] getTraces(){
 		return m_distances;
 	}
-	public long getTraces(int i, int j) throws Exception {
+	public double getTraces(int i, int j) throws Exception {
 		if((i < 0) || (i >= m_nbCities)) {
 			throw new Exception("Error : city index " + i + " should range between 0 and " + (m_nbCities - 1) + ".");
 		}
@@ -488,5 +490,10 @@ public class Instance {
 	public String getFileName() {
 		return m_fileName;
 	}
-
+	public void evaporate() {
+		for (int i=0;i<this.m_nbCities;i++) {
+			for (int j=0; j<this.m_nbCities;j++) {
+				this.m_traces[i][j] *= this.RHO;			}
+		}
+	}
 }
