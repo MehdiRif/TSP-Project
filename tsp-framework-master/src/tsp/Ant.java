@@ -5,16 +5,16 @@ import java.util.List;
 
 
 public class Ant implements Comparable<Ant>{
-	double Q =1;
-	double ALPHA=2;
-	double BETA=1;
-	double GAMMA=1;
+	double ALPHA=1;
+	double BETA=2;
+	double GAMMA=0.000000005;
 	private Instance graph;
 	private int position;
 	private boolean[] already_seen;
 	private List<Integer> path;
 	private double denominateur;
-	
+	private long pathlength;
+	private double Q;
 	
 	
 	public int getPosition() {
@@ -36,25 +36,10 @@ public class Ant implements Comparable<Ant>{
 		this.path = new ArrayList<Integer>();
 		this.already_seen[Depart]=true;
 		this.path.add(Depart);
+		this.pathlength=0;
+		this.Q=100;
 	}
 	
-	public long pathLength() {
-		long length = 0;
-		for (int i=0; i<this.path.size()-1; i++) {
-			try {
-				length += graph.getDistances(path.get(i), path.get(i+1));
-			}
-			catch (Exception e) {
-				return -1;
-			}
-		}
-		try {
-		return length+graph.getDistances(path.get(this.path.size()-1),this.path.get(0) );
-		}
-		catch (Exception e) {
-			return -1;
-		}
-	}
 	
 	public List<Integer> reachable() throws Exception{
 		List<Integer> reachable =new ArrayList<Integer>();
@@ -95,6 +80,7 @@ public class Ant implements Comparable<Ant>{
 	public void updatePos() throws Exception {
 		int nextPos=this.nextPos();
 		if (nextPos>=0) {
+			this.pathlength+= this.graph.getDistances(this.position, nextPos);
 			this.position=nextPos;
 			this.path.add(nextPos);
 			this.already_seen[nextPos]=true;
@@ -105,6 +91,7 @@ public class Ant implements Comparable<Ant>{
 		while (this.nextPos()!=-1) {
 			updatePos();
 		}
+		this.pathlength+= this.graph.getDistances(this.position,this.path.get(0));
 	}
 	
 	public boolean fullparcour() {
@@ -122,17 +109,27 @@ public class Ant implements Comparable<Ant>{
 	
 	public void updateTrace() {
 		for (int i=0 ;i<path.size()-1 ;i++) {
-			graph.m_traces[path.get(i)][path.get(i+1)]+=Q/this.pathLength();
+			graph.m_traces[path.get(i)][path.get(i+1)]+=Q/this.getPathlength();
+		}
+	}
+	
+	public void updateTraceElite() {
+		for (int i=0 ;i<path.size()-1 ;i++) {
+			graph.m_traces[path.get(i)][path.get(i+1)]+=100*Q/this.getPathlength();
 		}
 	}
 
 	@Override
 	public int compareTo(Ant a) {
 		// TODO Auto-generated method stub
-		return (int) Math.signum(this.pathLength()-a.pathLength());
+		return (int) Math.signum(this.getPathlength()-a.getPathlength());
 	}
 
+	public long getPathlength() {
+		return pathlength;
+	}
 
+	
 
 
 

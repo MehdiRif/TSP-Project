@@ -1,5 +1,9 @@
 package tsp;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * 
  * This class is the place where you should enter your code and from which you can create your own objects.
@@ -46,6 +50,7 @@ public class TSPSolver {
 		m_instance = instance;
 		m_solution = new Solution(m_instance);
 		m_timeLimit = timeLimit;
+		
 	}
 
 	// -----------------------------
@@ -69,17 +74,54 @@ public class TSPSolver {
 	public void solve() throws Exception
 	{
 		m_solution.print(System.err);
-		
+		int nbite=0;
 		// Example of a time loop
 		long startTime = System.currentTimeMillis();
 		long spentTime = 0;
+		Instance graph=this.m_instance;
+		List<Ant> bestiteration = new ArrayList<Ant>();
 		do
 		{
+			
+			Ant bestfourmis = new Ant(graph,0);
+			bestfourmis.parcour();
+			nbite++;
+			List<Ant> fourmis = new ArrayList<Ant>();
+			for (int i=0 ;i<150;i++) {
+				fourmis.add(new Ant(graph,(int) (Math.random()*graph.getNbCities())));
+				fourmis.get(i).parcour();
+				if (bestfourmis.getPathlength() > fourmis.get(i).getPathlength()) bestfourmis = fourmis.get(i);
+			}
+			graph.evaporate();
+			for (int i=0 ;i<150;i++) {
+				fourmis.get(i).updateTrace();
+			}
+			bestiteration.add(0,bestfourmis);
+			for (int eli =0 ; eli<3 ;eli++) {
+			if (eli<bestiteration.size()) bestiteration.get(eli).updateTraceElite();
+			}
+			System.out.println(bestfourmis.getPathlength());
+			spentTime = System.currentTimeMillis() - startTime;
+			System.out.println("temps ité :"+spentTime/1000 +"s");
+			
+			 
+			
+			
+			Collections.sort(bestiteration);
+			
 			// TODO
 			// Code a loop base on time here
 			spentTime = System.currentTimeMillis() - startTime;
+			
 		}while(spentTime < (m_timeLimit * 1000 - 100) );
-		
+		Ant ant= bestiteration.get(0);
+		System.out.println(ant.getPath().toString());
+		System.out.println(ant.getPathlength());
+		System.out.println(ant.fullparcour());
+		for (int k=0 ; k< ant.getPath().size() ; k++ ) {
+			m_solution.setCityPosition(ant.getPath().get(k), k);
+		}
+		m_solution.setCityPosition(ant.getPath().get(0), (int) ant.getPath().size());
 	}
 
 	// -----------------------------

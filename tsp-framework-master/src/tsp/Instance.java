@@ -54,7 +54,7 @@ public class Instance {
 	/** Matrices des traces*/
 	public double[][] m_traces;
 	
-	private double RHO = 0.1;
+	private double RHO = 0.5;
 
 
 	// -----------------------------
