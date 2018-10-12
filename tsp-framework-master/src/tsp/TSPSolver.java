@@ -87,18 +87,24 @@ public class TSPSolver {
 			bestfourmis.parcour();
 			nbite++;
 			List<Ant> fourmis = new ArrayList<Ant>();
-			for (int i=0 ;i<150;i++) {
+			for (int i=0 ;i<400;i++) {
 				fourmis.add(new Ant(graph,(int) (Math.random()*graph.getNbCities())));
 				fourmis.get(i).parcour();
 				if (bestfourmis.getPathlength() > fourmis.get(i).getPathlength()) bestfourmis = fourmis.get(i);
 			}
 			graph.evaporate();
-			for (int i=0 ;i<150;i++) {
+			for (int i=0 ;i<400;i++) {
 				fourmis.get(i).updateTrace();
 			}
+			bestfourmis.setPath(twoOpt(graph, bestfourmis.getPath()));
+			if (bestiteration.isEmpty()) bestiteration.add(bestfourmis);
 			bestiteration.add(0,bestfourmis);
-			for (int eli =0 ; eli<3 ;eli++) {
-			if (eli<bestiteration.size()) bestiteration.get(eli).updateTraceElite();
+			for (int eli =0 ; eli<10 ;eli++) {
+			if (eli<bestiteration.size()) {
+				bestiteration.get(eli).setPath(twoOpt(graph,bestiteration.get(eli).getPath()));
+				bestiteration.get(eli).updateTraceElite();
+				
+			}
 			}
 			System.out.println(bestfourmis.getPathlength());
 			spentTime = System.currentTimeMillis() - startTime;
@@ -107,23 +113,55 @@ public class TSPSolver {
 			 
 			
 			
-			Collections.sort(bestiteration);
+		
 			
 			// TODO
 			// Code a loop base on time here
 			spentTime = System.currentTimeMillis() - startTime;
 			
 		}while(spentTime < (m_timeLimit * 1000 - 100) );
-		Ant ant= bestiteration.get(0);
+			Collections.sort(bestiteration);
+			Ant ant= bestiteration.get(0);
 		System.out.println(ant.getPath().toString());
 		System.out.println(ant.getPathlength());
+		System.out.println(twoOpt(graph,ant.getPath()));
 		System.out.println(ant.fullparcour());
+		List<Integer> finalpath = twoOpt(graph,ant.getPath());
 		for (int k=0 ; k< ant.getPath().size() ; k++ ) {
-			m_solution.setCityPosition(ant.getPath().get(k), k);
+			m_solution.setCityPosition(finalpath.get(k), k);
 		}
-		m_solution.setCityPosition(ant.getPath().get(0), (int) ant.getPath().size());
+		m_solution.setCityPosition(finalpath.get(0), (int) ant.getPath().size());
 	}
 
+	public List<Integer> twoOpt(Instance graph,List<Integer> path) throws Exception{
+		int n = path.size();
+		boolean amelioration = true;
+		while (amelioration) {
+			amelioration=false;
+		for (int i=0 ;i<n-1;i++) {
+			for (int j=0 ;j<n-1 ;j++) {
+				if (i!=j) {
+					int min = Math.min(i, j);
+					int max = Math.max(i, j);
+					if (graph.getDistances(path.get(min), path.get(min+1)) + graph.getDistances(path.get(max), path.get(max+1))
+					>graph.getDistances(path.get(min), path.get(max)) + graph.getDistances(path.get(min+1), path.get(max+1)) ) {
+						int xj = path.get(max);
+						int xip1 = path.get(min+1);
+						path.set(min+1,xj);
+						path.set(max,xip1);
+						for (int p = min+2 ; p<(max-min-2)/2 ; p++) {
+							int stockage = path.get(p);
+							path.set(p, path.get(max-(p-min-1)));
+							path.set(max-(p-min-1), stockage);
+							amelioration = true;
+						}
+					}
+				}
+			}
+		}
+		}
+		return path;
+	}
 	// -----------------------------
 	// ----- GETTERS / SETTERS -----
 	// -----------------------------

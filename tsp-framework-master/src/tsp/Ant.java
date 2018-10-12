@@ -129,6 +129,10 @@ public class Ant implements Comparable<Ant>{
 		return pathlength;
 	}
 
+	public void setPath(List<Integer> path) {
+		this.path = path;
+	}
+
 	
 
 
