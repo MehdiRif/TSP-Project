@@ -250,6 +250,7 @@ public class Instance {
 
 		sc.close();
 		lineSc.close();
+		this.m_traces = new double[this.m_nbCities][this.m_nbCities];
 	}
 
 	/**
