@@ -75,7 +75,8 @@ public class TSPSolver {
 	{
 		m_solution.print(System.err);
 		genome secondbest = new genome(this.m_instance);
-		genome bestgen = new genome(this.m_instance,new ArrayList<Integer>(twoOpt(this.m_instance,secondbest.getPath())));
+		genome bestgen = new genome(this.m_instance);
+		bestgen.twoOpt();
 		long startTime = System.currentTimeMillis();
 		long spentTime = 0;
 		genome secondbestmute = new genome(this.m_instance,new ArrayList<Integer>(secondbest.getPath()));
@@ -110,40 +111,6 @@ public class TSPSolver {
 		this.m_solution.setCityPosition(0, finalpath.size());
 	}
 
-	public List<Integer> twoOpt(Instance graph,List<Integer> path) throws Exception{
-		int n = path.size();
-		boolean amelioration = true;
-		long startTime = System.currentTimeMillis();
-		long spentTime = 0;
-		while (amelioration && (spentTime < (m_timeLimit * 1000 - 100)/3 )) {
-			amelioration=false;
-		for (int i=0 ;i<n-2;i++) {
-			for (int j=i+2 ;j<n ;j++) {
-					int jp1= (j+1) % n;
-					if (graph.getDistances(path.get(i), path.get(i+1)) + graph.getDistances(path.get(j), path.get(jp1))
-					>graph.getDistances(path.get(i), path.get(j)) + graph.getDistances(path.get(i+1), path.get(jp1)) ) {
-						int xj = path.get(j);
-						int xip1 = path.get(i+1);
-						path.set(i+1,xj);
-						path.set(j,xip1);
-						List<Integer> newpath = new ArrayList<Integer>();
-						List<Integer> middle = path.subList(i+2, j);
-						Collections.reverse(middle);
- 						newpath.addAll(path.subList(0, i+2));
- 						newpath.addAll(middle);
- 						newpath.addAll(path.subList(j,n));
-
-							amelioration = true;
-						
-					}
-				}
-			}
-		spentTime = System.currentTimeMillis() - startTime;
-		}
-		
-		
-		return path;
-	}
 	// -----------------------------
 	// ----- GETTERS / SETTERS -----
 	// -----------------------------
