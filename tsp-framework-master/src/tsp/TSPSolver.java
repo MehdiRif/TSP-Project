@@ -95,7 +95,7 @@ public class TSPSolver {
 			bestgenmute = new genome(this.m_instance,new ArrayList<Integer>(bestgen.getPath()));
 			secondbest=(secondbest.getObjective()<nextgen.getGen().get(1).getObjective()) ? secondbest : nextgen.getGen().get(1);
 			secondbestmute = new genome(this.m_instance,new ArrayList<Integer>(secondbest.getPath()));
-			System.out.println("new longueur" +bestgen.calculpath());
+			System.out.println("new longueur" +bestgen.calculpath()) ;
 			// TODO
 			// Code a loop base on time here
 			spentTime = System.currentTimeMillis() - startTime;
