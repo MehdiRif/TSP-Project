@@ -74,43 +74,118 @@ public class TSPSolver {
 	public void solve() throws Exception
 	{
 		m_solution.print(System.err);
-		genome secondbest = new genome(this.m_instance);
-		genome bestgen = new genome(this.m_instance);
-		bestgen.twoOpt();
-		long startTime = System.currentTimeMillis();
-		long spentTime = 0;
-		genome secondbestmute = new genome(this.m_instance,new ArrayList<Integer>(secondbest.getPath()));
-		genome bestgenmute = new genome(this.m_instance,new ArrayList<Integer>(bestgen.getPath()));
 		
-		do
-		{
-			if (Math.random()>0.8) secondbestmute.shuffle();
-			if (Math.random()>0.9) bestgenmute.shuffle();
-			generation nextgen = new generation(bestgenmute,secondbestmute);
-			generation nextgen2 = new generation(secondbestmute,bestgenmute);
-			nextgen.getGen().addAll(nextgen2.getGen());
-			Collections.sort(nextgen.getGen());
-			nextgen.getGen().get(0).twoOpt();
-			nextgen.getGen().get(1).twoOpt();
-			bestgen =(bestgen.getObjective()<nextgen.getGen().get(0).getObjective()) ? bestgen : nextgen.getGen().get(0);
-			bestgenmute = new genome(this.m_instance,new ArrayList<Integer>(bestgen.getPath()));
-			secondbest=(secondbest.getObjective()<nextgen.getGen().get(1).getObjective()) ? secondbest : nextgen.getGen().get(1);
-			secondbestmute = new genome(this.m_instance,new ArrayList<Integer>(secondbest.getPath()));
-			System.out.println("new longueur" +bestgen.calculpath()) ;
-			// TODO
-			// Code a loop base on time here
-			spentTime = System.currentTimeMillis() - startTime;
-			System.out.println("fin d'une gen");
-		}while(spentTime < (m_timeLimit * 1000 - 100) ); 
-			
-		List<Integer> finalpath = bestgen.getPath();
-		//finalpath = twoOpt(this.m_instance,finalpath);
-		for (int k=0 ; k< finalpath.size();k++) {
-			this.m_solution.setCityPosition(finalpath.get(k),k);
-		}
-		this.m_solution.setCityPosition(0, finalpath.size());
-	}
 
+			
+			genome secondbest = new genome(this.m_instance);
+			genome bestgen = new genome(this.m_instance);
+			bestgen.twoOpt();
+			long startTime = System.currentTimeMillis();
+			long spentTime = 0;
+			genome secondbestmute = new genome(this.m_instance,new ArrayList<Integer>(secondbest.getPath()));
+			genome bestgenmute = new genome(this.m_instance,new ArrayList<Integer>(bestgen.getPath()));
+			
+			do
+			{
+				if (Math.random()>0.8) secondbestmute.shuffle();
+				if (Math.random()>0.9) bestgenmute.shuffle();
+				generation nextgen = new generation(bestgenmute,secondbestmute);
+				generation nextgen2 = new generation(secondbestmute,bestgenmute);
+				nextgen.getGen().addAll(nextgen2.getGen());
+				Collections.sort(nextgen.getGen());
+				nextgen.getGen().get(0).twoOpt();
+				nextgen.getGen().get(1).twoOpt();
+				bestgen =(bestgen.getObjective()<nextgen.getGen().get(0).getObjective()) ? bestgen : nextgen.getGen().get(0);
+				bestgenmute = new genome(this.m_instance,new ArrayList<Integer>(bestgen.getPath()));
+				secondbest=(secondbest.getObjective()<nextgen.getGen().get(1).getObjective()) ? secondbest : nextgen.getGen().get(1);
+				secondbestmute = new genome(this.m_instance,new ArrayList<Integer>(secondbest.getPath()));
+				System.out.println("new longueur" +bestgen.calculpath()) ;
+				// TODO
+				// Code a loop base on time here
+				spentTime = System.currentTimeMillis() - startTime;
+				System.out.println("fin d'une gen");
+			}while(spentTime < (m_timeLimit * 1000 - 100) ); 
+				
+			List<Integer> finalpath = bestgen.getPath();
+			//finalpath = twoOpt(this.m_instance,finalpath);
+			for (int k=0 ; k< finalpath.size();k++) {
+				this.m_solution.setCityPosition(finalpath.get(k),k);
+			}
+			this.m_solution.setCityPosition(0, finalpath.size());
+			
+
+			//_______________________________________________________________
+	//#Methode 2-Opt non utilise		
+  			
+//			long startTime = System.currentTimeMillis();
+//			long spentTime = 0;
+//			Instance graph=this.m_instance;
+			
+			//Defining tour zize
+//			int size=graph.getNbCities();
+			
+					
+//			Kopt _tour = new Kopt(graph,0);
+//			Kopt _newtour = new Kopt(graph,0);
+			
+			//initial sln
+
+//			for(int i=1; i < graph.getNbCities(); i++) {
+//				_tour.add(i);
+//				_newtour.add(i);
+			}	
+//				_tour.add(0);
+//				_newtour.add(0);
+			
+			
+			 // it repeats until no improvement is made 
+//		    int improve = 0;
+//		    int iteration = 0;
+		    
+		 
+//		    while ( improve < 5 )
+//		    {
+//		    	do
+//		    	{	
+//		        double best_distance = _tour.getlength();
+		 
+//		        for ( int i = 1; i < size - 1; i++ ) 
+//		        {
+//		            for ( int k = i + 1; k < size; k++) 
+//		            {
+//		            	_tour.TwoOptSwap( i, k, graph,  _newtour );
+//		                iteration++;
+         		                
+
+//		                double new_distance = _newtour.getlength();
+		 
+//		                if ( new_distance < best_distance ) 
+//		                {
+		                    // Improvement found so reset
+//		                    improve = 0;
+		                                                 
+//		                    for (int j=0;j<size;j++)
+//		                    {
+//		                    	_tour.setpos(j, _newtour.getpos(j));
+//		                    }
+		                         
+//		                    best_distance = new_distance;
+		            
+//		                }
+//		            }
+//		        }
+//		        System.out.println(_tour.getlength());
+//				spentTime = System.currentTimeMillis() - startTime;
+//				System.out.println("temps ité :"+spentTime/1000 +"s");
+//		        improve ++;
+//		    }while(spentTime < (m_timeLimit * 1000 - 100) );
+//		    }
+//		    for (int k=0 ; k< _tour.getPath().size() ; k++ ) {
+//				m_solution.setCityPosition(_tour.getpos(k), k);
+//			}
+//		}
+		
+	
 	// -----------------------------
 	// ----- GETTERS / SETTERS -----
 	// -----------------------------
