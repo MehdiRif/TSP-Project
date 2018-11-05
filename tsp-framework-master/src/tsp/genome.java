@@ -65,8 +65,10 @@ public class genome implements Comparable<genome> {
 	
 	
 	public void Mutation(int k) throws Exception {
+		
+		boolean swaps = Math.random()>0.7;
 		for (int i=0 ; i<k ;i++) {
-			this.Mutationswap();
+			if (swaps) this.Mutationswap();
 			this.singleMutation();
 		}
 		this.objective=this.calculpath();

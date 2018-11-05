@@ -11,7 +11,7 @@ public class generation {
 		List<genome> newgen = new ArrayList<genome>();
 		for (int i=0 ;i<50;i++) {
 			newgen.add(new genome(p1.getInstance(),new ArrayList<Integer>(p1.Crossover(p2).getPath())));
-			if (Math.random()<0.7) newgen.get(i).Mutation(1+(int) (7*Math.random()));
+			if (Math.random()<0.7) newgen.get(i).Mutation(1+(int) (4*Math.random()));
 
 		}
 		

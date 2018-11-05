@@ -84,7 +84,7 @@ public class TSPSolver {
 		
 		do
 		{
-			if (Math.random()>0.7) secondbestmute.shuffle();
+			if (Math.random()>0.8) secondbestmute.shuffle();
 			if (Math.random()>0.9) bestgenmute.shuffle();
 			generation nextgen = new generation(bestgenmute,secondbestmute);
 			generation nextgen2 = new generation(secondbestmute,bestgenmute);
