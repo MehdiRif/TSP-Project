@@ -15,7 +15,7 @@ public class Ant implements Comparable<Ant>{
 	private double denominateur;
 	private long pathlength;
 	private double Q;
-	
+	private int nbaccessibles;
 	
 	public int getPosition() {
 		return position;
@@ -38,6 +38,7 @@ public class Ant implements Comparable<Ant>{
 		this.path.add(Depart);
 		this.pathlength=0;
 		this.Q=100;
+		this.nbaccessibles= this.getGraph().getNbCities()-1;
 	}
 	
 	
@@ -84,6 +85,7 @@ public class Ant implements Comparable<Ant>{
 			this.position=nextPos;
 			this.path.add(nextPos);
 			this.already_seen[nextPos]=true;
+			this.nbaccessibles--;
 		}
 	}
 	
@@ -112,10 +114,20 @@ public class Ant implements Comparable<Ant>{
 			graph.m_traces[path.get(i)][path.get(i+1)]+=Q/this.getPathlength();
 		}
 	}
+	public void updateTraceGlobale() {
+		for (int i=0 ;i<path.size()-1 ;i++) {
+			graph.m_traces[path.get(i)][path.get(i+1)]+=50*Q/this.getPathlength();
+		}
+	}
 	
 	public void updateTraceElite() {
 		for (int i=0 ;i<path.size()-1 ;i++) {
-			graph.m_traces[path.get(i)][path.get(i+1)]+=100*Q/this.getPathlength();
+			graph.m_traces[path.get(i)][path.get(i+1)]+=1000*Q/this.getPathlength();
+		}
+	}
+	public void updateTraceEliteGlobale() {
+		for (int i=0 ;i<path.size()-1 ;i++) {
+			graph.m_traces[path.get(i)][path.get(i+1)]+=5000*Q/this.getPathlength();
 		}
 	}
 
@@ -134,7 +146,48 @@ public class Ant implements Comparable<Ant>{
 	}
 
 	
+	public long calculpath() throws Exception {
+		int n=this.path.size()-1;
+		long sortie =0;
+		for (int i=0 ;i<n;i++) {
+			sortie += this.graph.getDistances(path.get(i), path.get(i+1));
+		}
+		return sortie+this.graph.getDistances(path.get(n-1), path.get(0));
+	}
 
+	public void setPathlength(long pathlength) {
+		this.pathlength = pathlength;
+	}
+
+	public Instance getGraph() {
+		return graph;
+	}
+
+	public void setDenominateur(double denominateur) {
+		this.denominateur = denominateur;
+	}
+
+	public int getNbaccessibles() {
+		return nbaccessibles;
+	}
+
+	public void setGraph(Instance graph) {
+		this.graph = graph;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+	public void setAlready_seen(boolean[] already_seen) {
+		this.already_seen = already_seen;
+	}
+
+	public void setNbaccessibles(int nbaccessibles) {
+		this.nbaccessibles = nbaccessibles;
+	}
+	
+	
 
 
 

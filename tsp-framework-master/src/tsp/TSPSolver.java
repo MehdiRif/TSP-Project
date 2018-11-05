@@ -74,92 +74,74 @@ public class TSPSolver {
 	public void solve() throws Exception
 	{
 		m_solution.print(System.err);
-		int nbite=0;
-		// Example of a time loop
+		genome secondbest = new genome(this.m_instance);
+		genome bestgen = new genome(this.m_instance,new ArrayList<Integer>(twoOpt(this.m_instance,secondbest.getPath())));
 		long startTime = System.currentTimeMillis();
 		long spentTime = 0;
-		Instance graph=this.m_instance;
-		List<Ant> bestiteration = new ArrayList<Ant>();
+		genome secondbestmute = new genome(this.m_instance,new ArrayList<Integer>(secondbest.getPath()));
+		genome bestgenmute = new genome(this.m_instance,new ArrayList<Integer>(bestgen.getPath()));
+		
 		do
 		{
-			
-			Ant bestfourmis = new Ant(graph,0);
-			bestfourmis.parcour();
-			nbite++;
-			List<Ant> fourmis = new ArrayList<Ant>();
-			for (int i=0 ;i<400;i++) {
-				fourmis.add(new Ant(graph,(int) (Math.random()*graph.getNbCities())));
-				fourmis.get(i).parcour();
-				if (bestfourmis.getPathlength() > fourmis.get(i).getPathlength()) bestfourmis = fourmis.get(i);
-			}
-			graph.evaporate();
-			for (int i=0 ;i<400;i++) {
-				fourmis.get(i).updateTrace();
-			}
-			bestfourmis.setPath(twoOpt(graph, bestfourmis.getPath()));
-			if (bestiteration.isEmpty()) bestiteration.add(bestfourmis);
-			bestiteration.add(0,bestfourmis);
-			for (int eli =0 ; eli<10 ;eli++) {
-			if (eli<bestiteration.size()) {
-				bestiteration.get(eli).setPath(twoOpt(graph,bestiteration.get(eli).getPath()));
-				bestiteration.get(eli).updateTraceElite();
-				
-			}
-			}
-			System.out.println(bestfourmis.getPathlength());
-			spentTime = System.currentTimeMillis() - startTime;
-			System.out.println("temps ité :"+spentTime/1000 +"s");
-			
-			 
-			
-			
-		
-			
+			if (Math.random()>0.7) secondbestmute.shuffle();
+			if (Math.random()>0.9) bestgenmute.shuffle();
+			generation nextgen = new generation(bestgenmute,secondbestmute);
+			generation nextgen2 = new generation(secondbestmute,bestgenmute);
+			nextgen.getGen().addAll(nextgen2.getGen());
+			Collections.sort(nextgen.getGen());
+			nextgen.getGen().get(0).twoOpt();
+			nextgen.getGen().get(1).twoOpt();
+			bestgen =(bestgen.getObjective()<nextgen.getGen().get(0).getObjective()) ? bestgen : nextgen.getGen().get(0);
+			bestgenmute = new genome(this.m_instance,new ArrayList<Integer>(bestgen.getPath()));
+			secondbest=(secondbest.getObjective()<nextgen.getGen().get(1).getObjective()) ? secondbest : nextgen.getGen().get(1);
+			secondbestmute = new genome(this.m_instance,new ArrayList<Integer>(secondbest.getPath()));
+			System.out.println("new longueur" +bestgen.calculpath());
 			// TODO
 			// Code a loop base on time here
 			spentTime = System.currentTimeMillis() - startTime;
+			System.out.println("fin d'une gen");
+		}while(spentTime < (m_timeLimit * 1000 - 100) ); 
 			
-		}while(spentTime < (m_timeLimit * 1000 - 100) );
-			Collections.sort(bestiteration);
-			Ant ant= bestiteration.get(0);
-		System.out.println(ant.getPath().toString());
-		System.out.println(ant.getPathlength());
-		System.out.println(twoOpt(graph,ant.getPath()));
-		System.out.println(ant.fullparcour());
-		List<Integer> finalpath = twoOpt(graph,ant.getPath());
-		for (int k=0 ; k< ant.getPath().size() ; k++ ) {
-			m_solution.setCityPosition(finalpath.get(k), k);
+		List<Integer> finalpath = bestgen.getPath();
+		//finalpath = twoOpt(this.m_instance,finalpath);
+		for (int k=0 ; k< finalpath.size();k++) {
+			this.m_solution.setCityPosition(finalpath.get(k),k);
 		}
-		m_solution.setCityPosition(finalpath.get(0), (int) ant.getPath().size());
+		this.m_solution.setCityPosition(0, finalpath.size());
 	}
 
 	public List<Integer> twoOpt(Instance graph,List<Integer> path) throws Exception{
 		int n = path.size();
 		boolean amelioration = true;
-		while (amelioration) {
+		long startTime = System.currentTimeMillis();
+		long spentTime = 0;
+		while (amelioration && (spentTime < (m_timeLimit * 1000 - 100)/3 )) {
 			amelioration=false;
-		for (int i=0 ;i<n-1;i++) {
-			for (int j=0 ;j<n-1 ;j++) {
-				if (i!=j) {
-					int min = Math.min(i, j);
-					int max = Math.max(i, j);
-					if (graph.getDistances(path.get(min), path.get(min+1)) + graph.getDistances(path.get(max), path.get(max+1))
-					>graph.getDistances(path.get(min), path.get(max)) + graph.getDistances(path.get(min+1), path.get(max+1)) ) {
-						int xj = path.get(max);
-						int xip1 = path.get(min+1);
-						path.set(min+1,xj);
-						path.set(max,xip1);
-						for (int p = min+2 ; p<(max-min-2)/2 ; p++) {
-							int stockage = path.get(p);
-							path.set(p, path.get(max-(p-min-1)));
-							path.set(max-(p-min-1), stockage);
+		for (int i=0 ;i<n-2;i++) {
+			for (int j=i+2 ;j<n ;j++) {
+					int jp1= (j+1) % n;
+					if (graph.getDistances(path.get(i), path.get(i+1)) + graph.getDistances(path.get(j), path.get(jp1))
+					>graph.getDistances(path.get(i), path.get(j)) + graph.getDistances(path.get(i+1), path.get(jp1)) ) {
+						int xj = path.get(j);
+						int xip1 = path.get(i+1);
+						path.set(i+1,xj);
+						path.set(j,xip1);
+						List<Integer> newpath = new ArrayList<Integer>();
+						List<Integer> middle = path.subList(i+2, j);
+						Collections.reverse(middle);
+ 						newpath.addAll(path.subList(0, i+2));
+ 						newpath.addAll(middle);
+ 						newpath.addAll(path.subList(j,n));
+
 							amelioration = true;
-						}
+						
 					}
 				}
 			}
+		spentTime = System.currentTimeMillis() - startTime;
 		}
-		}
+		
+		
 		return path;
 	}
 	// -----------------------------
