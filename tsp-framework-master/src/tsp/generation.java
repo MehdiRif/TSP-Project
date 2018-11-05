@@ -7,6 +7,12 @@ import java.util.List;
 public class generation {
 	private List<genome> gen;
 	
+	/**
+	 * Creates a population of new genomes descending from two parents p1 and p2
+	 * @param p1
+	 * @param p2
+	 * @throws Exception
+	 */
 	public generation(genome p1 , genome p2) throws Exception {
 		List<genome> newgen = new ArrayList<genome>();
 		for (int i=0 ;i<50;i++) {

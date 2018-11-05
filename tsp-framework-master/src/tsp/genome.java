@@ -9,6 +9,10 @@ public class genome implements Comparable<genome> {
 	private Instance graph;
 	private long objective;
 	
+	
+	/**
+	 * Returns the NearestNeighbour cycle of the instance the genome is implemented in
+	 */
 	public List<Integer> NearestNeighbour() throws Exception{
 		boolean[] dejavu = new boolean[this.graph.getNbCities()];
 		List<Integer> output = new ArrayList<Integer>();
@@ -33,17 +37,34 @@ public class genome implements Comparable<genome> {
 		return output;
 	}
 	
+	/**
+	 * Initializes a genome with the specified instance i and the Nearest Neighbour cycle 
+	 * @param i
+	 * @throws Exception
+	 */
 	public genome(Instance i) throws Exception {
 		this.graph = i;
 		this.path= NearestNeighbour();
 		this.objective=this.calculpath();
 	}
+	
+	/**
+	 * Creates a genome with the specified instance i and specified cycle p
+	 * @param i
+	 * @param p
+	 * @throws Exception
+	 */
 	public genome(Instance i,List<Integer> p) throws Exception {
 		this.path=p;
 		this.graph=i;
 		if (!p.isEmpty()) this.objective=this.calculpath();
 	}
 	
+	/**
+	 * return the length of the genome's cycle
+	 * @return
+	 * @throws Exception
+	 */
 	public long calculpath() throws Exception {
 		int n=this.path.size()-1;
 		long sortie =0;
@@ -53,6 +74,10 @@ public class genome implements Comparable<genome> {
 		return sortie+this.graph.getDistances(path.get(n), path.get(0));
 	}
 
+	/**
+	 * swaps two randomly chosen elements of a genome's cycle
+	 * @throws Exception
+	 */
 	public void Mutationswap() throws Exception{
 		int i = (int) (((this.graph.getNbCities()-1))*Math.random())+1;
 		int j=i;
@@ -64,6 +89,11 @@ public class genome implements Comparable<genome> {
 	}
 	
 	
+	/**
+	 * applies k times the following methods : Mutationswap() and singleMutation()
+	 * @param k
+	 * @throws Exception
+	 */
 	public void Mutation(int k) throws Exception {
 		
 		boolean swaps = Math.random()>0.7;
@@ -74,7 +104,10 @@ public class genome implements Comparable<genome> {
 		this.objective=this.calculpath();
 	}
 	
-	
+	/**
+	 * Randomly chose a 2-opt non necessarily improving the cycle
+	 * @throws Exception
+	 */
 	public void singleMutation() throws Exception{
 		int n = path.size();
 		int i = (int) (Math.random()*(n-3));
@@ -93,7 +126,12 @@ public class genome implements Comparable<genome> {
 	}
 	
 
-	
+	/**
+	 * Creates a new genome by crossing over two parent genomes
+	 * @param parent2
+	 * @return
+	 * @throws Exception
+	 */
 	public genome Crossover(genome parent2) throws Exception {
 		genome fils1 = new genome(this.graph,new ArrayList<Integer>());
 		int i = (int) (((this.graph.getNbCities()-2))*Math.random())+1;
@@ -132,6 +170,10 @@ public class genome implements Comparable<genome> {
 		return fils1;
 	}
 	
+	/**
+	 * shuffles randomly a genome's cycle
+	 * @throws Exception
+	 */
 	public void shuffle() throws Exception {
 		List <Integer> newpath = this.path.subList(1, this.path.size());
 		Collections.shuffle(newpath);
@@ -160,6 +202,11 @@ public class genome implements Comparable<genome> {
 		else return (this.objective<g.objective) ? -1 : 1;
 	}
 	
+	
+	/**
+	 * Applies 2-opt moves until no more improvements are possible
+	 * @throws Exception
+	 */
 	public void twoOpt() throws Exception{
 		int n = path.size();
 		boolean amelioration = true;
